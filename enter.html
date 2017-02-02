@@ -49,23 +49,38 @@
       </div>
     </div>
     <div class="container">
-
-
-      <!-- [END greetings] -->
-      <ul>
-      <li> <a href=display?genre_name=Hip-hop> Browse hip-hop titles </a>
-      <li> <a href=display?genre_name=Jazz> Browse jazz titles </a>
-      <li> <a href=display?genre_name=Classical> Browse classical titles </a>
-      </ul>
-
-
-      <div>
-      <a href=enter>Enter new song</a>
+      <!-- [START greetings] -->
+      {% for greeting in greetings %}
+      <div class="row">
+        {% if greeting.author %}
+          <b>{{ greeting.author.email }}
+            {% if user and user.user_id() == greeting.author.identity %}
+              (You)
+            {% endif %}
+          </b> wrote:
+        {% else %}
+          An anonymous person wrote:
+        {% endif %}
+        {{ greeting.artist_name }}, {{ greeting.title }}
       </div>
+      {% endfor %}
+      <!-- [END greetings] -->
 
+      <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
+        <div><label for="artist">Artist's Name:</label><textarea name="artist_name" class="input-block-level" rows="1"></textarea></div>
+        <div><label for="title">title:</label><textarea name="title" class="input-block-level" rows="3"></textarea></div>
+        <div><label for="album_name">Album Name:</label><textarea name="album_name" class="input-block-level" rows="1"></textarea></div>
+        <div><input type="submit" class="btn btn-large btn-primary" value="Enter song info"></div>
+      </form>
 
+      <hr>
 
-      <a href="{{ url|safe }}">{{ url_linktext }}</a>
+      <form>Enter Genre:
+        <input value="{{ guestbook_name }}" name="guestbook_name">
+        <input type="submit" value="switch">
+      </form>
+
+      <a href=/>Back to main</a>
     </div>
   </body>
 </html>

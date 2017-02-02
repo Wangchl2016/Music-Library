@@ -49,23 +49,26 @@
       </div>
     </div>
     <div class="container">
-
-
-      <!-- [END greetings] -->
-      <ul>
-      <li> <a href=display?genre_name=Hip-hop> Browse hip-hop titles </a>
-      <li> <a href=display?genre_name=Jazz> Browse jazz titles </a>
-      <li> <a href=display?genre_name=Classical> Browse classical titles </a>
-      </ul>
-
-
-      <div>
-      <a href=enter>Enter new song</a>
+      <!-- [START greetings] -->
+      {% for greeting in greetings %}
+      <div class="row">
+        {% if greeting.author %}
+          <b>{{ greeting.author.email }}
+            {% if user and user.user_id() == greeting.author.identity %}
+              (You)
+            {% endif %}
+          </b> wrote:
+        {% else %}
+          An anonymous person wrote:
+        {% endif %}
+        {{ greeting.artist_name }}, {{ greeting.title }}
       </div>
+      {% endfor %}
+      <!-- [END greetings] -->
 
 
 
-      <a href="{{ url|safe }}">{{ url_linktext }}</a>
+      <a href=/>Back to main</a>
     </div>
   </body>
 </html>

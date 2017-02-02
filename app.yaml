@@ -11,6 +11,7 @@ handlers:
 - url: /bootstrap
   static_dir: bootstrap
 
+
 - url: /.*
   script: guestbook.app
 # [END handlers]

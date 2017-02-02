@@ -180,8 +180,9 @@ class display(webapp2.RequestHandler):
 class search(webapp2.RequestHandler):
 
     def get(self):
-        genra_name = self.request.get('genre_name',
+        genra_name = self.request.get('genra_name',
                                           DEFAULT_GENRA_NAME)
+        artist_name = self.request.get('artist_name')
         songs_query = Song.query(
             ancestor=guestbook_key(genra_name)).order(-Song.date)
         songs = songs_query.fetch(10)
@@ -198,11 +199,12 @@ class search(webapp2.RequestHandler):
             'user': user,
             'songs': songs,
             'genra_name': urllib.quote_plus(genra_name),
+            'artist_name': urllib.quote_plus(artist_name),
             'url': url,
             'url_linktext': url_linktext,
         }
 
-        template = JINJA_ENVIRONMENT.get_template('display.html')
+        template = JINJA_ENVIRONMENT.get_template('search.html')
         self.response.write(template.render(template_values))
 
 
@@ -213,6 +215,6 @@ app = webapp2.WSGIApplication([
     ('/sign', Guestbook),
     ('/enter', enter),
     ('/display', display),
-    ('/search', search).
+    ('/search', search),
     ], debug=True)
 # [END app]

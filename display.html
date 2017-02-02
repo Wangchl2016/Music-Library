@@ -49,22 +49,22 @@
       </div>
     </div>
     <div class="container">
-      <!-- [START greetings] -->
-      {% for greeting in greetings %}
+      <!-- [START songs] -->
+      {% for song in songs %}
       <div class="row">
-        {% if greeting.author %}
-          <b>{{ greeting.author.email }}
-            {% if user and user.user_id() == greeting.author.identity %}
+        {% if song.author %}
+          <b>{{ song.author.email }}
+            {% if user and user.user_id() == song.author.identity %}
               (You)
             {% endif %}
           </b> wrote:
         {% else %}
           An anonymous person wrote:
         {% endif %}
-        {{ greeting.artist_name }}, {{ greeting.title }}
+        {{ song.artist_name }}, {{ song.title }}
       </div>
       {% endfor %}
-      <!-- [END greetings] -->
+      <!-- [END songs] -->
 
 
 

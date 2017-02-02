@@ -49,24 +49,8 @@
       </div>
     </div>
     <div class="container">
-      <!-- [START greetings] -->
-      {% for greeting in greetings %}
-      <div class="row">
-        {% if greeting.author %}
-          <b>{{ greeting.author.email }}
-            {% if user and user.user_id() == greeting.author.identity %}
-              (You)
-            {% endif %}
-          </b> wrote:
-        {% else %}
-          An anonymous person wrote:
-        {% endif %}
-        {{ greeting.artist_name }}, {{ greeting.title }}
-      </div>
-      {% endfor %}
-      <!-- [END greetings] -->
 
-      <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
+      <form action="/sign?genra_name={{ genra_name }}" method="post">
         <div><label for="artist">Artist's Name:</label><textarea name="artist_name" class="input-block-level" rows="1"></textarea></div>
         <div><label for="title">title:</label><textarea name="title" class="input-block-level" rows="3"></textarea></div>
         <div><label for="album_name">Album Name:</label><textarea name="album_name" class="input-block-level" rows="1"></textarea></div>
@@ -76,7 +60,7 @@
       <hr>
 
       <form>Enter Genre:
-        <input value="{{ guestbook_name }}" name="guestbook_name">
+        <input value="{{ genra_name }}" name="genra_name">
         <input type="submit" value="switch">
       </form>
 

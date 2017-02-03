@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import unicode_literals
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,8 @@ from google.appengine.ext import ndb
 import jinja2
 import webapp2
 
+
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -31,6 +33,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 # [END imports]
 
 DEFAULT_GENRA_NAME = 'Jazz'
+DEFAULT_ALBUM_NAME = ''
 
 
 # We set a parent key on the 'Songs' to ensure that they are all
@@ -113,8 +116,10 @@ class Guestbook(webapp2.RequestHandler):
                     email=users.get_current_user().email())
 
         song.artist_name = self.request.get('artist_name')
+        #put artist name to lower case for search
+        #song.artist_name = song.artist_name.lower()
         song.title = self.request.get('title')
-        song.album_name = self.request.get('album_name')
+        song.album_name = self.request.get('album_name', DEFAULT_ALBUM_NAME)
         song.put()
 
         query_params = {'genra_name': genra_name}
@@ -156,7 +161,7 @@ class display(webapp2.RequestHandler):
                                           DEFAULT_GENRA_NAME)
         songs_query = Song.query(
             ancestor=guestbook_key(genra_name)).order(-Song.date)
-        songs = songs_query.fetch(10)
+        songs = songs_query.fetch(50)
 
         user = users.get_current_user()
         if user:
@@ -183,6 +188,10 @@ class search(webapp2.RequestHandler):
         genra_name = self.request.get('genra_name',
                                           DEFAULT_GENRA_NAME)
         artist_name = self.request.get('artist_name')
+
+        #error handeling
+        artist_name_size = len(artist_name)
+
         songs_query = Song.query(
             ancestor=guestbook_key(genra_name)).order(-Song.date)
         songs = songs_query.fetch(10)
@@ -200,6 +209,7 @@ class search(webapp2.RequestHandler):
             'songs': songs,
             'genra_name': urllib.quote_plus(genra_name),
             'artist_name': urllib.quote_plus(artist_name),
+            'artist_name_size':artist_name_size,
             'url': url,
             'url_linktext': url_linktext,
         }

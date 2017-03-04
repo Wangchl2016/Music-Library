@@ -31,6 +31,21 @@
         overflow: scroll;
       }
     </style>
+
+    <script>   
+      function validateForm() {
+          var x = "{{ user_id|safe }}";
+          if (x == "") {
+              alert("You must log in first to buy song");
+              return false;
+          }
+      }
+      </script>
+
+
+
+
+
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -49,25 +64,52 @@
       </div>
     </div>
     <div class="container">
+        <hr>
+    <br><br>
       <!-- [START songs] -->
-      {% for song in songs %}
-      <div class="row">
-        {% if song.author %}
-          <b>{{ song.author.email }}
-            {% if user and user.user_id() == song.author.identity %}
-              (You)
-            {% endif %}
-          </b> wrote:
-        {% else %}
-          An anonymous person wrote:
-        {% endif %}
-        {{ song.artist_name }}, {{ song.title }}
+
+
+
+
+    <form action="/addSong2Cart?user_id={{ user_id }}" method="post" onsubmit="return validateForm()">
+      <b>
+
+
+      <div class="page-header">
       </div>
-      {% endfor %}
-      <!-- [END songs] -->
+      <div class="row">
+        <div class="col-md-15">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Artist Name</th>
+                <th>Title</th>
+                <th>Album Name</th>
+                <th>price</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            {% for song in songs %}
+            <tr><td><input type="checkbox" name="check_list" value= {{ song.uid }} > </td><td>{{ song.artist_name }}</td><td> {{ song.title }}</td><td>{{song.album_name}}</td><td>{{song.price}}</td></tr>
+              
+            </div>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        
+      
+  </div>
 
 
+    <input type="submit" name="submit" value="Add to Cart"/>
+    </form>
 
+
+      <br>
       <a href=/>Back to main</a>
     </div>
   </body>

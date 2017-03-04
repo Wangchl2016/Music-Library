@@ -31,6 +31,30 @@
         overflow: scroll;
       }
     </style>
+    
+         <script>   
+            function validateForm() {
+                var x = document.forms["myForm"]["artist_name"].value;
+                var y = document.forms["myForm"]["title"].value;
+                var z = document.forms["myForm"]["price"].value;
+                if (x == "") {
+                    alert("Name must be filled out");
+                    return false;
+                }
+
+                if (y == "") {
+                    alert("title must be filled out");
+                    return false;
+                }
+                if(isNaN(z)){
+                  alert("price must be a number");
+                  return false;
+                }
+            }
+      </script>
+
+
+
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -50,16 +74,17 @@
     </div>
     <div class="container">
 
-      <form action="/sign?genra_name={{ genra_name }}" method="post">
+      <form action="/sign?genra_name={{ genra_name }}" method="post" name="myForm" onsubmit="return validateForm()">
         <div><label for="artist">Artist's Name:</label><textarea name="artist_name" class="input-block-level" rows="1"></textarea></div>
         <div><label for="title">title:</label><textarea name="title" class="input-block-level" rows="3"></textarea></div>
         <div><label for="album_name">Album Name:</label><textarea name="album_name" class="input-block-level" rows="1"></textarea></div>
+        <div><label for="price">Price:</label><textarea name="price" class="input-block-level" rows="1"></textarea></div>
         <div><input type="submit" class="btn btn-large btn-primary" value="Enter song info"></div>
       </form>
 
       <hr>
 
-      <form>Enter Genre:
+      <form>Enter Genre(Hip-hop, Jazz or Classical, case not sensitive):
         <input value="{{ genra_name }}" name="genra_name">
         <input type="submit" value="switch">
       </form>

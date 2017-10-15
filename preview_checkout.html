@@ -69,20 +69,38 @@
       <!-- [START songs] -->
 
 
+    <script>
+    var x = "{{ user_id|safe }}";
+    if (x == '') {
+        alert("You must log in first to view cart");
+        return false;
+    }
+    </script>
 
 
-    <form action="/addSong2Cart?user_id={{ user_id }}" method="post" onsubmit="return validateForm()">
-      <b>
+    <script>   
+        function finish_purchase() {
+          alert("You have finished purchase! Go to purchase history for detail");
+          return true;
+        }
+      </script>
+
+    {% if user_id == '' %}
+    You must login first!
+    {% endif %}
 
 
+    {% if user_id != '' %}
+     <b>
+      {% set total = 0 %}
       <div class="page-header">
+      <h1> Confirmation </h1>
       </div>
       <div class="row">
         <div class="col-md-15">
           <table class="table">
             <thead>
               <tr>
-                <th>#</th>
                 <th>Artist Name</th>
                 <th>Title</th>
                 <th>Album Name</th>
@@ -91,24 +109,43 @@
             </thead>
             <tbody>
 
-            {% for song in songs %}
-            <tr><td><input type="checkbox" name="check_list" value= {{ song.uid }} > </td><td>{{ song.artist_name }}</td><td> {{ song.title }}</td><td>{{song.album_name}}</td><td>{{song.price}}</td></tr>
+              {% set vars = {'result_exist_flag': False} %}
+              {% for song in songs %}
               
-            </div>
+              <tr>
+                <td>{{ song.artist_name }}</td>
+                <td> {{ song.title }}</td>
+                <td>{{song.album_name}}</td>
+                <td>{{song.price}}</td></tr>
+              {% if vars.update({'result_exist_flag': True}) %} {% endif %}
+
+
+              {% set number = song.price | float %}
+              {% set total = total + number %}
+              {% if loop.last %}
+               <tr><td>The total price is {{total}}</td></tr>
+              {% endif %}
+              <br/>
+        
+
+
+                  </div>
             {% endfor %}
             </tbody>
           </table>
         </div>
-        
-        
-      
-  </div>
 
+                {% if not vars.result_exist_flag %}
+        <div>
+         No result has been found 
+        </div>
+        {% endif %}
 
-    <input type="submit" name="submit" value="Add to Cart"/>
-    </form>
+      <form action=/checkout?user_id={{ user_id }} method="post" onsubmit="return finish_purchase()">
+        <button name="Checkout" value="Checkout">Checkout</button>
+      </form>
 
-
+      {% endif %}
       <br>
       <a href=/>Back to main</a>
     </div>

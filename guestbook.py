@@ -18,6 +18,8 @@ from __future__ import unicode_literals
 import os
 import urllib
 import hashlib
+import random
+from datetime import datetime
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -77,9 +79,6 @@ class Song(ndb.Model):
     price = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 # [END song]
-
-
-
 
 
 # [START main_page]
@@ -142,7 +141,10 @@ class addSong(webapp2.RequestHandler):
         song.price = self.request.get('price')
         m = hashlib.md5()
         m.update(song.artist_name + song.title + song.album_name)
-        song.uid = m.hexdigest()
+        random.seed(datetime.now())
+        r = random.randint(0,1000000)
+        song.uid = str(r)
+        #song.uid = m.hexdigest()
         song.put()
 
         query_params = {'genra_name': genra_name}
@@ -182,42 +184,44 @@ class addSong2Cart (webapp2.RequestHandler):
 
 
         '''check for songs already bought and in current cart'''
-        if user_id != '':
-            songs_query = Song.query(
-                ancestor= cart_key(user_id)).order(-Song.date)
-            songs = songs_query.fetch(50)
+        # if user_id != '':
+        #     songs_query = Song.query(
+        #         ancestor= cart_key(user_id)).order(-Song.date)
+        #     songs = songs_query.fetch(50)
 
-        for current_song_uid in songs:
-            current_cart.append(current_song_uid.uid)
+        # for current_song_uid in songs:
+        #     current_cart.append(current_song_uid.uid)
 
 
 
-        if user_id != '':
-            songs_query = Song.query(
-                ancestor= history_key(user_id)).order(-Song.date)
-            songs = songs_query.fetch(50)
+        # if user_id != '':
+        #     songs_query = Song.query(
+        #         ancestor= history_key(user_id)).order(-Song.date)
+        #     songs = songs_query.fetch(50)
 
-        for current_song_uid in songs:
-            current_cart.append(current_song_uid.uid)
+        # for current_song_uid in songs:
+        #     current_cart.append(current_song_uid.uid)
 
 
         #uids = self.request.GET['check_list']
-        uids = self.request.get('check_list', allow_multiple=True)
+        uids = self.request.get('check_list')
         for uid in uids:
             # for every song, check if it's already in the cart, if not, we 
             # copy all the info and add to cart
             
 
             if uid not in current_cart:
-                songinfo_query = Song.query()
-                songinfo = songinfo_query.fetch(50)
+                songinfo = Song.query()
+                #songinfo = songinfo_query.fetch(50)
                 for single_song_info in songinfo:
                     if single_song_info.uid == uid:
                         song = Song(parent=cart_key(user_id))
                         song.artist_name = single_song_info.artist_name
                         song.album_name = single_song_info.album_name
                         song.title = single_song_info.title
-                        song.uid = single_song_info.uid
+                        random.seed(datetime.now())
+                        r = random.randint(0,100000)
+                        song.uid = str(int(single_song_info.uid) + r)
                         song.price = single_song_info.price
                         song.put()
         
@@ -227,7 +231,7 @@ class addSong2Cart (webapp2.RequestHandler):
 # [END guestbook]
 
 
-class removeSongFromCart (webapp2.RequestHandler):
+class removeSongFromCart(webapp2.RequestHandler):
 
     def post(self):
         # We set the same parent key on the 'Song' to ensure each
@@ -277,7 +281,9 @@ class checkout (webapp2.RequestHandler):
             song.artist_name = single_song_info.artist_name
             song.album_name = single_song_info.album_name
             song.title = single_song_info.title
-            song.uid = single_song_info.uid
+            random.seed(datetime.now())
+            r = random.randint(0,100000)
+            song.uid = str(int(single_song_info.uid) + r)
             song.price = single_song_info.price
             single_song_info.key.delete()
             song.put()
@@ -357,17 +363,19 @@ class search(webapp2.RequestHandler):
         artist_name_size = len(artist_name)
         genra_name_l = genra_name.lower()
 
-        songs_query = Song.query(
+        songs = Song.query(
             ancestor=guestbook_key(genra_name_l)).order(-Song.date)
-        songs = songs_query.fetch(50)
+        #songs = songs_query.fetch(50)
 
         user = users.get_current_user()
         if user:
             url = users.create_logout_url(self.request.uri)
+            user_id = users.get_current_user().user_id()
             url_linktext = 'Logout'
         else:
             url = users.create_login_url(self.request.uri)
             url_linktext = 'Login'
+            user_id = ''
 
         template_values = {
             'user': user,
@@ -377,6 +385,7 @@ class search(webapp2.RequestHandler):
             'artist_name_size':artist_name_size,
             'url': url,
             'url_linktext': url_linktext,
+            'user_id': user_id,
         }
 
         template = JINJA_ENVIRONMENT.get_template('search.html')

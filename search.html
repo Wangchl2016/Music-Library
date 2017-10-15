@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <head>
+    <!-- [START css] -->
+    <link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.css">
+    <!-- [END css] -->
+    <style type="text/css">
+      body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+      blockquote {
+        margin-bottom: 10px;
+        border-left-color: #bbb;
+      }
+      form {
+        margin-top: 10px;
+      }
+      .form-signin input[type="text"] {
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 15px;
+        padding: 7px 9px;
+      }
+      .row {
+        margin-left: 0px;
+        margin-top: 10px;
+        overflow: scroll;
+      }
+    </style>
+     <script>   
+            function validateForm() {
+                var x = document.forms["myForm"]["artist_name"].value;
+                if (x == "") {
+                    alert("Name must be filled out");
+                    return false;
+                }
+            }
+      </script>
+
+
+  </head>
+
+
+
+
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">App Engine Guestbook</a>
+          <div class="nav-collapse collapse pull-right">
+            <a href="{{ url|safe }}" class="btn">{{ url_linktext }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+        <center>
+      <br>
+      <font size="+2" color=0000CC> Search Page </font>
+      <br><br>
+    </center>
+
+    <script>   
+      function validateForm2() {
+          var x = "{{ user_id|safe }}";
+          if (x == "") {
+              alert("You must log in first to buy song");
+              return false;
+          }
+      }
+      </script>
+
+
+
+      <!-- case of validity check -->
+      {% if not artist_name_size %}
+
+        
+        {% else %}
+        {% set vars = {'result_exist_flag': False} %}
+        <form action="/addSong2Cart?user_id={{ user_id }}" method="post" onsubmit="return validateForm2()">
+      <b>
+              <div class="page-header">
+      </div>
+      <div class="row">
+        <div class="col-md-15">
+          <table class="table">
+            <thead>
+              <tr>
+              <th>#</th>
+                <th>Artist Name</th>
+                <th>Title</th>
+                <th>Album Name</th>
+                <th>price</th>
+              </tr>
+            </thead>
+            <tbody>
+          {% for song in songs %}
+            {% set flag = 0 %}
+
+            <!-- case of exact matching -->
+            {% for char in song.artist_name if not flag %}
+              {% if artist_name.lower() == song.artist_name[loop.index0:loop.index0+artist_name_size].lower() %}
+
+                 {% if vars.update({'result_exist_flag': True}) %} {% endif %}
+
+                <tr><td><input type="checkbox" name="check_list" value= {{ song.uid }} > </td><td>{{ song.artist_name }}</td><td>{{ song.title }}</td><td>{{song.album_name}}</td><td>{{song.price}}</td></tr>
+                {% set flag = 1 %}
+                
+              {% endif %}
+            {% endfor %}
+          </b> 
+
+      
+                      </div>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+            <input type="submit" name="submit" value="Add to Cart"/>
+    </form>
+
+        {% if not vars.result_exist_flag %}
+        <div>
+         No result has been found 
+        </div>
+        {% endif %}
+      {% endif %}
+
+        
+
+
+
+
+      <form name="myForm" onsubmit="return validateForm()">Enter name:
+      <br>
+        <input type="text" value="{{ artist_name }}" name="artist_name">
+        </br>
+        <br>
+        Enter Genre:
+        </br>
+        <input type="text" value="{{ genra_name }}" name="genra_name">
+        <br>
+        <input type="submit" value="search">
+        </br>
+      </form>
+
+      <hr>
+
+
+
+      <a href=/>Back to main</a>
+    </div>
+  </body>
+</html>
+{% endautoescape %}
